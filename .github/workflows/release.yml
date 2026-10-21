@@ -1,0 +1,30 @@
+name: release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+  id-token: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/checkout@v4
+        with:
+          repository: jdx/goreleaser
+          ref: feat-packslip
+          path: .goreleaser-src
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Build goreleaser from the packslip branch
+        working-directory: .goreleaser-src
+        run: go build -o "$RUNNER_TEMP/goreleaser" .
+      - name: Release
+        run: |
+          rm -rf .goreleaser-src
+          "$RUNNER_TEMP/goreleaser" release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
