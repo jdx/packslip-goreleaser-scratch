@@ -16,22 +16,16 @@ jobs:
           repository: jdx/goreleaser
           ref: feat-packslip
           path: .goreleaser-src
-      - uses: actions/checkout@v4
-        with:
-          repository: jdx/packslip
-          ref: fix-go-token-client
-          path: .packslip-src
       - uses: actions/setup-go@v5
         with:
           go-version: stable
       - name: Build goreleaser from the packslip branch
         working-directory: .goreleaser-src
         run: |
-          go mod edit -replace github.com/jdx/packslip/go="$GITHUB_WORKSPACE/.packslip-src/go"
           go build -o "$RUNNER_TEMP/goreleaser" .
       - name: Release
         run: |
-          rm -rf .goreleaser-src .packslip-src
+          rm -rf .goreleaser-src
           "$RUNNER_TEMP/goreleaser" release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
