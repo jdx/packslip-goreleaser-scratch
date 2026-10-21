@@ -1,16 +1,45 @@
 version: 2
+project_name: packslip-goreleaser-scratch
 builds:
-  - env: [CGO_ENABLED=0]
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
+  - id: dynamic
+    binary: scratch-dynamic
+    env: [CGO_ENABLED=0]
+    goos: [linux]
+    goarch: [amd64]
+    tags: [dynamic]
+    ldflags: ["-s -w -X main.version={{.Version}}"]
+  - id: arm-softfloat
+    binary: scratch-arm-softfloat
+    env: [CGO_ENABLED=0]
+    goos: [linux]
+    goarch: [arm]
+    goarm: ["7,softfloat"]
     ldflags: ["-s -w -X main.version={{.Version}}"]
 archives:
-  - formats: [tar.gz]
-    format_overrides:
-      - goos: windows
-        formats: [zip]
-packslip:
-  enabled: true
+  - id: dynamic
+    ids: [dynamic]
+    formats: [txz, tzst]
+    name_template: "{{ .ProjectName }}_dynamic_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+  - id: arm-softfloat
+    ids: [arm-softfloat]
+    formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_arm-softfloat_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+checksum:
+  name_template: checksums.txt
+signs:
+  - cmd: cosign
+    signature: "${artifact}.sigstore.json"
+    artifacts: checksum
+    args:
+      - sign-blob
+      - "--bundle=${signature}"
+      - "${artifact}"
+      - --yes
+packslips:
+  - ids: [dynamic]
+    project: github.com/jdx/packslip-goreleaser-scratch/tools/dynamic
+  - ids: [arm-softfloat]
+    project: github.com/jdx/packslip-goreleaser-scratch/tools/arm-softfloat
 release:
   github:
     owner: jdx
