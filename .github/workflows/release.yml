@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: jdx/goreleaser
-          ref: 63fb9074b877c088eb422fc59d7476a3d91446cd
+          ref: fa7f0fffc44c10c18e73bb0c51fdbc56090222ad
           path: .goreleaser-src
           persist-credentials: false
       - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5

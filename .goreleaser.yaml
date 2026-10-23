@@ -15,6 +15,13 @@ builds:
     goarch: [arm]
     goarm: ["7,softfloat"]
     ldflags: ["-s -w -X main.version={{.Version}}"]
+  - id: levels
+    binary: scratch-levels
+    env: [CGO_ENABLED=0]
+    goos: [linux]
+    goarch: [amd64]
+    goamd64: [v1, v3]
+    ldflags: ["-s -w -X main.version={{.Version}}"]
 archives:
   - id: dynamic
     ids: [dynamic]
@@ -24,6 +31,10 @@ archives:
     ids: [arm-softfloat]
     formats: [tar.gz]
     name_template: "{{ .ProjectName }}_arm-softfloat_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+  - id: levels
+    ids: [levels]
+    formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_levels_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ with .Amd64 }}_{{ . }}{{ end }}"
 checksum:
   name_template: checksums.txt
 signs:
@@ -40,6 +51,8 @@ packslips:
     project: github.com/jdx/packslip-goreleaser-scratch/tools/dynamic
   - ids: [arm-softfloat]
     project: github.com/jdx/packslip-goreleaser-scratch/tools/arm-softfloat
+  - ids: [levels]
+    project: github.com/jdx/packslip-goreleaser-scratch/tools/levels
 release:
   github:
     owner: jdx
